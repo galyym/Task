@@ -1,4 +1,5 @@
 @extends('main.layout')
+@extends('articles.tag')
 
 @section('page-title')
     Главная страница
@@ -25,3 +26,19 @@
         <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
     </form>
 @endsection
+
+@section('tag')
+    <h5 class="mt-3">Tags</h5>
+    <form class="form-group" action="{{ route('tag.show') }}" method="get">
+        @foreach($tag as $t)
+            <button type="submit" class="btn btn-primary">
+                {{$t->name}}
+            </button>
+        @endforeach
+    </form>
+@endsection
+
+
+
+
+

@@ -4,11 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\TagController;
 
 
 Route::get('/', [ArticleController::class, 'index'])->name('home');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
-Route::get('/tags/{tag}', [ArticleController::class, 'tag'])->name('articles.tag');
+
+//Route::get('/tag', [TagController::class, 'index'])->name('articles.tag');
+Route::get('/tag/show', [TagController::class, 'show'])->name('tag.show');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/articles', [ArticleController::class, 'create'])->name('articles.create');

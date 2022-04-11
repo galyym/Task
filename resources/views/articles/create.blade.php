@@ -28,6 +28,14 @@
             <label>Cтатья</label>
             <textarea name="articleText" class="form-control d-block" cols="" rows="10" placeholder="Статья"></textarea>
         </div>
+        <div class="form-group mt-3">
+            <label>Теги</label>
+            <select class="form-select" aria-label="Default select example">
+                @foreach($tag as $t)
+                    <option>{{ $t->name }}</option>
+                @endforeach
+            </select>
+        </div>
 
         <button type="submit" class="btn btn-primary mt-3">Добавить</button>
     </form>

@@ -38,6 +38,7 @@
             </div>
             <div class="col-3">
                 @yield('search')
+                @yield('tag')
             </div>
         </div>
     </div>

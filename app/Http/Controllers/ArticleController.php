@@ -21,17 +21,16 @@ class ArticleController extends Controller
             $articles = Article::orderBy('created_at', 'desc')->paginate(3);
         }
 
+        $tag = Tag::all();
 
-        return view('articles.index')->with('articles', $articles);
-    }
-
-    public function tag(Tag $tag){
-        return view('articles.tag')->with('tag', $tag);
+        return view('articles.index')->with('articles', $articles)->with('tag', $tag);
     }
 
     public function create()
     {
-        return view('articles.create');
+        $tag = Tag::all();
+
+        return view('articles.create')->with('tag', $tag);
     }
 
     public function store(Request $request)
