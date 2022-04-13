@@ -10,8 +10,7 @@ use App\Http\Controllers\TagController;
 Route::get('/', [ArticleController::class, 'index'])->name('home');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
-//Route::get('/tag', [TagController::class, 'index'])->name('articles.tag');
-Route::get('/tag/show', [TagController::class, 'show'])->name('tag.show');
+Route::get('/tag/{id}', [TagController::class, 'show'])->name('tag.show');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/articles', [ArticleController::class, 'create'])->name('articles.create');
@@ -21,7 +20,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/articles/{id}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 });
 
-Route::get('/admin', [MainController::class, 'admin'])->name('admin.index')->middleware('admin');
+
+Route::group(['middleware' => 'admin'], function (){
+    Route::get('/admin', [MainController::class, 'admin'])->name('admin.index');
+    Route::get('/tag', [TagController::class, 'create'])->name('tags.create');
+    Route::post('/tag', [TagController::class, 'store'])->name('tag.store');
+    Route::get('tag/{id}/destroy', [TagController::class, 'destroy'])->name('tag.delete');
+});
+
 
 
 Route::group(['middleware' => 'guest'], function (){
@@ -32,7 +38,3 @@ Route::group(['middleware' => 'guest'], function (){
 });
 
 Route::get('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth');
-
-
-
-

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 class TagController extends Controller
 {
@@ -26,7 +30,14 @@ class TagController extends Controller
      */
     public function create()
     {
-        //
+
+        $tag = Tag::all();
+        $article = Article::all();
+        if (Auth::user()->is_admin){
+            return view('tags.create')->with('tag', $tag)->with('article', $article);
+        }else{
+            return redirect()->home();
+        }
     }
 
     /**
@@ -35,9 +46,12 @@ class TagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request){
+        $tag = Tag::create([
+            'name'=>$request->name
+        ]);
+
+        return redirect('/tag');
     }
 
     /**
@@ -46,10 +60,16 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function show(Tag $tag)
+    public function show($id)
     {
+        $query = DB::table("article_tag")->select("article_id")->where("tag_id", "=", $id)->get();
+
+        $articleIdes = Arr::pluck($query, 'article_id');
+
+        $articles = DB::table("articles")->whereIn("id", $articleIdes)->orderBy("created_at","desc")->paginate(3);
+
         $tag = Tag::all();
-        dd($tag);
+        return view('articles.index')->with('articles', $articles)->with('tag', $tag);
     }
 
     /**
@@ -81,8 +101,14 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tag $tag)
+    public function destroy($id)
     {
-        //
+        DB::table('tags')->where('id','=',$id)->delete();
+
+        $tagID = DB::table('article_tag','=',$id);
+        if(!isset($tagID)){
+            DB::table('article_tag')->where('tag_id','=',$id)->delete();
+        }
+        return view('admin.index');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -22,9 +22,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|min:2',
             'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
+            'password' => 'required|confirmed|min:5|',
         ]);
 
         $user = User::create([
@@ -56,13 +56,15 @@ class UserController extends Controller
         ])) {
             session()->flash('success', 'Вы вошли в систему');
             if (Auth::user()->is_admin){
-                return redirect()->route('admin.index');
+                $tag = Tag::all();
+                return redirect()->route('admin.index')->with('tag', $tag);
             }else{
                 return redirect()->home();
             }
+        }else{
+            return redirect('/login')->with('errors', 'Неверное имя пользователя или пароль');
         }
 
-        return redirect()->back()->with('error', 'Неверное имя пользователя или пароль');
 
     }
 

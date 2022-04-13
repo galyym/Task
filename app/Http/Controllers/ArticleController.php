@@ -13,38 +13,51 @@ class ArticleController extends Controller
 {
     public function index()
     {
-        $search = request()->query('search');
-
-        if($search){
-            $articles = Article::where('title', 'LIKE', "%{$search}%")->simplePaginate(3);
-        }else{
-            $articles = Article::orderBy('created_at', 'desc')->paginate(3);
-        }
-
         $tag = Tag::all();
+            $search = request()->query('search');
 
-        return view('articles.index')->with('articles', $articles)->with('tag', $tag);
+            if($search){
+                $articles = Article::where('title', 'LIKE', "%{$search}%")->simplePaginate(3);
+            }else{
+                $articles = Article::orderBy('created_at', 'desc')->paginate(3);
+            }
+
+
+            return view('articles.index')->with('articles', $articles)->with('tag', $tag);
+
     }
 
     public function create()
     {
         $tag = Tag::all();
-
-        return view('articles.create')->with('tag', $tag);
+        return view('articles.create', compact('tag'));
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
+
         $request->validate([
-            'title' => 'required|max:190|min:10',
-            'articleText' => 'required|min:20'
+            'title' => 'required|min:10',
+            'articleText' => 'required|min:20',
+            'image' => 'nullable|mimes:jpeg,jpg,png,gif|max:10000'
         ]);
+
 
         $article = new Article();
         $article->title = $request->input('title');
         $article->articleText = $request->input('articleText');
         $article->user_id = auth()->user()->id;
+
+        if($request->file('image')){
+            $file= $request->file('image');
+            $filename= date('YmdHi').$file->getClientOriginalName();
+            $file-> move(public_path('public/Image'), $filename);
+            $article['image']= $filename;
+        }
+
         $article->save();
+
+
+        $article->tags()->attach($request->input('tags'));
 
         return redirect()->home();
     }
@@ -57,12 +70,13 @@ class ArticleController extends Controller
 
     public function edit($id)
     {
-        $article = Article::find($id);
+        $tag = Tag::all();
 
+        $article = Article::find($id);
         if(auth()->user()->id != $article->user_id)
             return redirect('/articles')->with('error', 'Вы не авторизованы');
 
-        return view('articles.edit')->with('article', $article);
+        return view('articles.edit', compact('article', 'tag'));
     }
 
     public function update(Request $request, $id)
@@ -75,9 +89,18 @@ class ArticleController extends Controller
         $article = Article::find($id);
         $article->title = $request->input('title');
         $article->articleText = $request->input('articleText');
+
+        if($request->file('image')){
+            $file= $request->file('image');
+            $filename= date('YmdHi').$file->getClientOriginalName();
+            $file-> move(public_path('public/Image'), $filename);
+            $article['image']= $filename;
+        }
         $article->save();
 
-        return redirect('/')->with('success', 'Статья была обновлена');
+        $article->tags()->sync($request->input('tags'));
+
+        return redirect("/articles/{$id}")->with('success', 'Статья была обновлена');
     }
 
     public function destroy($id)
@@ -90,4 +113,5 @@ class ArticleController extends Controller
         $article->delete();
         return redirect('/')->with('success', 'Статья была удалена');
     }
+
 }

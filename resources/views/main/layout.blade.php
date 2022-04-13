@@ -6,6 +6,8 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+
     <title>@yield('page-title')</title>
 </head>
 <body>
@@ -23,11 +25,19 @@
             @else
                 <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{{ route('articles.create') }}">Добавить статью</a>
-                    <a class="me-3 py-2 text-dark text-decoration-none" href="#">{{ Auth::user()->name }}</a>
+                    @if(Auth::user()->is_admin)
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="/admin">{{ Auth::user()->name }}</a>
+                    @else
+                        <a class="me-3 py-2 text-dark text-decoration-none" href="#">{{ Auth::user()->name }}</a>
+                    @endif
                     <a class="me-3 py-2 text-dark text-decoration-none" href="{{ route('logout') }}">Выйти</a>
                 </nav>
             @endguest
         </div>
+    </div>
+
+    <div class="container">
+        @yield('btn_back')
     </div>
 
     <div class="container">
@@ -44,5 +54,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="/js/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <div class="container">
+        @yield('script')
+    </div>
 </body>
 </html>

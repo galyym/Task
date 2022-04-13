@@ -18,6 +18,7 @@ class CreateArticlesTable extends Migration
             $table->string('title');
             $table->mediumText('articleText');
             $table->integer('user_id');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
